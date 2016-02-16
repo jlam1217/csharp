@@ -16,8 +16,28 @@ namespace ContosoUniversity.Controllers
         private SchoolContext db = new SchoolContext();
 
         // GET: Student
-        public ActionResult Index()
+        public ActionResult Index(string sortOrder)
         {
+            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+
+            var students = from s in db.Students
+                           select s;
+            switch(sortOrder)
+            {
+                case ("name_desc") :
+                    students = students.OrderByDescending(s => s.LastName);
+                    break;
+                case ("Date"):
+                    students = students.OrderBy(s => s.EnrollmentDate);
+                    break;
+                case ("date_desc") :
+                    students = students.OrderByDescending(s => s.EnrollmentDate);
+                    break;
+                default:
+                    students = students.OrderBy(s => s.LastName);
+                    break;
+            }
             return View(db.Students.ToList());
         }
 
@@ -79,21 +99,7 @@ namespace ContosoUniversity.Controllers
             return View(student);
         }
 
-        // POST: Student/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit([Bind(Include = "ID,LastName,FirstMidName,EnrollmentDate")] Student student)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        db.Entry(student).State = EntityState.Modified;
-        //        db.SaveChanges();
-        //        return RedirectToAction("Index");
-        //    }
-        //    return View(student);
-        //}
+        
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
         public ActionResult EditPost(int? id)
@@ -140,22 +146,24 @@ namespace ContosoUniversity.Controllers
             return View(student);
         }
 
-        //// POST: Student/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Delete(int id)
-        //{
-        //    try
-        //    {
-        //        Student student = db.Students.Find(id);
-        //        db.Students.Remove(student);
-        //        db.SaveChanges();
-        //    }
-        //    catch
-        //    {
-        //        return RedirectToAction("Index");
-        //    }
-        //}
+        // POST: Student/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id)
+        {
+            try
+            {
+                Student student = db.Students.Find(id);
+                db.Students.Remove(student);
+                db.SaveChanges();
+            }
+            catch (DataException dex)
+            {
+                //Log the error (uncomment dex variable name and add a line here to write a log.
+                return RedirectToAction("Delete", new { id = id, saveChangesError = true });
+            }
+            return RedirectToAction("Index");
+        }
 
         protected override void Dispose(bool disposing)
         {
