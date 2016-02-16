@@ -140,22 +140,22 @@ namespace ContosoUniversity.Controllers
             return View(student);
         }
 
-        // POST: Student/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id)
-        {
-            try
-            {
-                Student student = db.Students.Find(id);
-                db.Students.Remove(student);
-                db.SaveChanges();
-            }
-            catch
-            {
-                return RedirectToAction("Index");
-            }
-        }
+        //// POST: Student/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Delete(int id)
+        //{
+        //    try
+        //    {
+        //        Student student = db.Students.Find(id);
+        //        db.Students.Remove(student);
+        //        db.SaveChanges();
+        //    }
+        //    catch
+        //    {
+        //        return RedirectToAction("Index");
+        //    }
+        //}
 
         protected override void Dispose(bool disposing)
         {
